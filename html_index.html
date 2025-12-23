@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chrismom Task</title>
+    <link rel="stylesheet" href="css_styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <!-- Notification -->
+    <div id="notification" class="notification hidden">
+        <span id="notification-message"></span>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <h1 class="title">Chrismom Task</h1>
+            <div class="nav-buttons">
+                <button id="viewTasksBtn" class="btn btn-primary active">View Tasks</button>
+                <button id="addTaskBtn" class="btn btn-secondary">
+                    <span>➕</span> Add Task
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container main-content">
+        <!-- Table View -->
+        <div id="tableView" class="view-section">
+            <div class="card">
+                <!-- Filters -->
+                <div class="filters-section">
+                    <button id="toggleFiltersBtn" class="btn btn-outline">
+                        <span>🔍</span> <span id="filterBtnText">Show Filters</span>
+                    </button>
+                    
+                    <div id="filtersContainer" class="filters-grid hidden">
+                        <input type="text" id="filterStaffName" placeholder="Staff Name" class="input">
+                        <input type="text" id="filterTeamName" placeholder="Team Name" class="input">
+                        <input type="date" id="filterStartDate" placeholder="Start Date" class="input">
+                        <input type="date" id="filterEndDate" placeholder="End Date" class="input">
+                    </div>
+                </div>
+
+                <!-- Loading Spinner -->
+                <div id="loadingSpinner" class="loading-container">
+                    <div class="spinner"></div>
+                </div>
+
+                <!-- Empty State -->
+                <div id="emptyState" class="empty-state hidden">
+                    <p>No tasks found</p>
+                </div>
+
+                <!-- Table -->
+                <div id="tableContainer" class="table-container hidden">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Day</th>
+                                <th>Staff Name</th>
+                                <th>Team Name</th>
+                                <th>Assigned Date</th>
+                                <th>Media</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody"></tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div id="paginationContainer" class="pagination hidden">
+                    <div id="paginationInfo" class="pagination-info"></div>
+                    <div class="pagination-controls">
+                        <button id="prevPageBtn" class="btn btn-sm">◀</button>
+                        <span id="pageInfo" class="page-info"></span>
+                        <button id="nextPageBtn" class="btn btn-sm">▶</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Form View -->
+        <div id="adminView" class="view-section hidden">
+            <div class="card">
+                <h2 class="form-title">Add New Task - <span id="dayNumberDisplay">Day 1</span></h2>
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="label">👤 Staff Name</label>
+                        <input type="text" id="staffName" class="input" placeholder="Enter staff name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="label">👥 Team Name</label>
+                        <input type="text" id="teamName" class="input" placeholder="Enter team name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="label">📅 Assigned Date</label>
+                        <input type="date" id="assignedDate" class="input" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="label">Day Number</label>
+                        <input type="number" id="dayNumber" class="input" min="1" value="1">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="label">📝 Task Description</label>
+                    <textarea id="taskDescription" class="textarea" rows="4" placeholder="Describe the task..." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="label">🖼️ Upload Image</label>
+                    <div class="upload-area" id="uploadArea">
+                        <input type="file" id="imageUpload" accept="image/*" class="file-input">
+                        <label for="imageUpload" class="upload-label">
+                            <div id="uploadPlaceholder">
+                                <div class="upload-icon">📤</div>
+                                <p>Click to upload image</p>
+                            </div>
+                            <img id="imagePreview" class="image-preview hidden" alt="Preview">
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="label">🎥 Video Link (Optional)</label>
+                    <input type="url" id="videoLink" class="input" placeholder="https://example.com/video.mp4">
+                </div>
+
+                <button id="submitTaskBtn" class="btn btn-submit">
+                    <span id="submitBtnText">➕ Add Task</span>
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Configuration Modal -->
+    <div id="configModal" class="modal">
+        <div class="modal-content">
+            <h2>⚙️ Supabase Configuration</h2>
+            <p>Please enter your Supabase credentials to get started:</p>
+            
+            <div class="form-group">
+                <label class="label">Supabase URL</label>
+                <input type="text" id="supabaseUrl" class="input" value="https://ybtknbibxboncpqlplmc.supabase.co" placeholder="https://xxxxx.supabase.co">
+            </div>
+            
+            <div class="form-group">
+                <label class="label">Supabase Anon Key</label>
+                <input type="text" id="supabaseKey" class="input" value="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlidGtuYmlieGJvbmNwcWxwbG1jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY0MTQ0OTUsImV4cCI6MjA4MTk5MDQ5NX0.Jacnq3COBjiQeSCj8u268cn1RUL8Qd-tEOTslSWZaHc" placeholder="eyJhbGc...">
+            </div>
+            
+            <button id="saveConfigBtn" class="btn btn-primary">Save & Continue</button>
+            <p class="help-text">Find these in your Supabase Dashboard → Settings → API</p>
+        </div>
+    </div>
+
+    <script src="js_app.js"></script>
+</body>
+</html>
